@@ -1,9 +1,17 @@
 const bcrypt = require("bcryptjs")
+const userModel = require("../Model/userModel"); 
+const userService = require("../Services/userService");
 
 // Create User 
 // Path user/signup
 //Post API is public
-const createUser = (req,res,next) =>{
+const createUser = async (req,res,next) =>{
+    let {name , mobile, email, password } = req.body;
+    var salt = bcrypt.genSaltSync(10);
+    password = bcrypt.hashSync(password , salt);
+
+    userService.createUser(name,mobile,email,password);
+    console.log(password);
     res.send("user Created");
 };
 
@@ -12,6 +20,7 @@ const createUser = (req,res,next) =>{
 //Update API is public
 
 const updateUser = (req,res,next) =>{
+
     res.send("user Update");
 }
 
@@ -44,19 +53,20 @@ const getAllUser = (req,res,next) =>{
 // Login User 
 // Path user/login
 // POST API is public
-const loginUser = (req,res,next) =>{
+const loginUser = async (req,res,next) =>{
     
-    let {username , password } = req.body;
-    if(username = "yash" && password == "1234")
+    let {email , password } = req.body;
+    const dbpass = await userService.findUser(email);
+    console.log(dbpass);
+    if(!(dbpass == null) &&  await bcrypt.compare(password,dbpass))
     {
-        res.send("User is login");
+        res.send("Login Successful");
     }
     else
     {
-        res.send("access Denied");
+        res.send("Access Denied");
     }
-   
-
+    
 }
 
 module.exports = { 
