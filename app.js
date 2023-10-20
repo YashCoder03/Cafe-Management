@@ -5,7 +5,6 @@ const dbConnection = require("./Db/DbConnection");
 const app =  server.app;
 
 
-
 app.use("/user",userRoutes);
 
 app.get("/",(req,res) => {

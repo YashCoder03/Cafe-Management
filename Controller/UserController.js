@@ -1,4 +1,4 @@
-const { get } = require("../Routes/userRoute");
+const bcrypt = require("bcryptjs")
 
 // Create User 
 // Path user/signup
@@ -41,10 +41,29 @@ const getAllUser = (req,res,next) =>{
     res.send("Get All User");
 }
 
+// Login User 
+// Path user/login
+// POST API is public
+const loginUser = (req,res,next) =>{
+    
+    let {username , password } = req.body;
+    if(username = "yash" && password == "1234")
+    {
+        res.send("User is login");
+    }
+    else
+    {
+        res.send("access Denied");
+    }
+   
+
+}
+
 module.exports = { 
     createUser,
     updateUser,
     deleteUser,
     getAllUser,
-    getUser
+    getUser,
+    loginUser
  };
