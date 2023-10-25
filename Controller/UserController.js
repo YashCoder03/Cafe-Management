@@ -1,18 +1,31 @@
 const bcrypt = require("bcryptjs")
 const userModel = require("../Model/userModel"); 
 const userService = require("../Services/userService");
-
+const { check, validationResult } = require('express-validator')
+const jwt = require("jsonwebtoken")
 // Create User 
 // Path user/signup
 //Post API is public
-const createUser = async (req,res,next) =>{
-    let {name , mobile, email, password } = req.body;
-    var salt = bcrypt.genSaltSync(10);
-    password = bcrypt.hashSync(password , salt);
+const createUser = async (req,res) =>{
 
-    userService.createUser(name,mobile,email,password);
-    console.log(password);
-    res.send("user Created");
+    const errors = validationResult(req);
+    console.log(errors)
+    if(errors.isEmpty())
+    {
+
+        let {name , mobile, email, password } = req.body;
+        var salt = bcrypt.genSaltSync(10);
+        password = bcrypt.hashSync(password , salt);
+        userService.createUser(name,mobile,email,password);
+        console.log(password);
+        res.status(201).send("User Created");
+    }
+    else
+    {
+        return res.status(422).send(errors);
+    }
+
+
 };
 
 // update User 
@@ -60,11 +73,15 @@ const loginUser = async (req,res,next) =>{
     console.log(dbpass);
     if(!(dbpass == null) &&  await bcrypt.compare(password,dbpass))
     {
-        res.send("Login Successful");
+        const payload = {email};
+        const secreatkey = process.env.SECRET_KEY;
+        const options = { expiresIn : process.env.TOKEN_LIFE};
+        const token = jwt.sign(payload,secreatkey,options);
+        res.status(200).json(token).send("Login Successful");
     }
     else
     {
-        res.send("Access Denied");
+        res.status(401).send("Access Denied");
     }
     
 }

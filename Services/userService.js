@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const userModel = require("../Model/userModel");
 const { use } = require("../Routes/userRoute");
 
@@ -19,7 +20,20 @@ const findUser = async (email) => {
         return user.password;
     }
 }
+const isEmailExists = async (email) => {
+    const user = await userModel.findOne({where : {email}});
+
+    if(user != null)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 module.exports = {
     createUser,
-    findUser
+    findUser,
+    isEmailExists
 }
